@@ -7,6 +7,6 @@
 
 #include <stdbool.h>
 
-void login_dialog(char* password, const int remaining_tries, const bool first_time_user);
+void login(const char* encrypted_file, const char* decrypted_file, char* password);
 
 #endif // LOGIN_H

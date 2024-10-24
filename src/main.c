@@ -22,18 +22,7 @@ int main() {
     const char* encrypted_file = "C:/data/output.bin";
     char* password = malloc(50 * sizeof(char));
 
-    if (file_exists(encrypted_file)) {
-        int i = 3;
-        for (; i > 0; i--) {
-            login_dialog(password, i, false);
-            if (decrypt_file(encrypted_file, decrypted_file, password))
-                break;
-        }
-        if (!i)
-            exit(1);
-    } else {
-        login_dialog(password, 0, true);
-    }
+    login(encrypted_file, decrypted_file, password);
 
     free(password);
     remove(decrypted_file);

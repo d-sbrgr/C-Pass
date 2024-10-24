@@ -3,6 +3,8 @@
 //
 
 #include "login.h"
+#include "util.h"
+#include "crypto.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -31,4 +33,19 @@ void login_dialog(char* password, const int remaining_tries, const bool first_ti
         printf("%i tries remaining\n", remaining_tries);
     printf("Enter your password: (max 50 characters)\n");
     scanf("%50s", password);
+}
+
+void login(const char* encrypted_file, const char* decrypted_file, char* password) {
+    if (file_exists(encrypted_file)) {
+        int i = 3;
+        for (; i > 0; i--) {
+            login_dialog(password, i, false);
+            if (decrypt_file(encrypted_file, decrypted_file, password))
+                break;
+        }
+        if (!i)
+            exit(1);
+    } else {
+        login_dialog(password, 0, true);
+    }
 }
