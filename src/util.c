@@ -7,7 +7,7 @@
 
 bool file_exists(const char *filename){
   FILE *file = fopen(filename, "r");
-  if(file == NULL)
+  if(!file)
     return false;
   fclose(file);
   return true;

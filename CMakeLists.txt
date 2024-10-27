@@ -20,6 +20,7 @@ add_executable(C_Pass
         src/login.h
         src/crypto.c
         src/login.c
-        src/util.c)
+        src/util.c
+        src/password.c)
 
 target_link_libraries(C_Pass ${OPENSSL_LIB_DIR}/libssl.lib ${OPENSSL_LIB_DIR}/libcrypto.lib)
