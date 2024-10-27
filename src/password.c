@@ -18,10 +18,10 @@ const char *alpha_upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const char *alpha_lower = "abcdefghijklmnopqrstuvwxyz";
 
 /*
-Generate a random new password that matches the requirements
-
-param struct password_requirement* requirement: Pointer to the minimum password requirement defined by the user
-return char*: Newly created character array with the new password
+ * Generate a random new password that matches the requirements
+ *
+ * param struct password_requirement* requirement: Pointer to the minimum password requirement defined by the user
+ * return char*: Newly created character array with the new password
  */
 char* generate_password(const struct password_requirement* requirement) {
     if (requirement->length < requirement->uppercased + requirement->digits + requirement->special_characters) {
@@ -30,7 +30,7 @@ char* generate_password(const struct password_requirement* requirement) {
     // Seed the random number generator
     char* password = calloc(requirement->length, sizeof(char));
 
-    srand((unsigned int)time(NULL));
+    srand(time(NULL));
 
     int i = 0;
 
@@ -70,6 +70,13 @@ char* generate_password(const struct password_requirement* requirement) {
 }
 
 
+/*
+ * Deletes the password in the password array at the given index.
+ * Frees all memory and sets the array at the given index to NULL
+ *
+ * param struct password*** arr: Pointer to the array containing the password struct pointers
+ * param const int* index: Pointer to the integer depicting the given index
+ */
 void delete_password(struct password*** arr, const int* index) {
     if (*arr == NULL)
         return;
@@ -82,6 +89,15 @@ void delete_password(struct password*** arr, const int* index) {
 }
 
 
+/*
+ * Changes the password in the password array at the given index.
+ * Frees the memory of the old password string and allocates new memory in the password struct,
+ * where the new password is stored
+ *
+ * param struct password*** arr: Pointer to the array containing the password struct pointers
+ * param const int* index: Pointer to the integer depicting the given index
+ * param const char* password: Character array containing the string of the new password
+ */
 void change_password(struct password*** arr, const int* index, const char* password) {
     if (*arr == NULL)
         return;
@@ -91,6 +107,17 @@ void change_password(struct password*** arr, const int* index, const char* passw
 }
 
 
+/*
+ * Add a new password to the array containing the password structs.
+ * Dynamically allocates new memory if the array is currently full and initializes newly
+ * allocated memory with NULL
+ *
+ * param struct password*** arr: Pointer to the array containing the password struct pointers
+ * param int* curr_size: Pointer to the integer describing the current size of the array
+ * param const char* name: String containing the name of the new entry
+ * param const char* username: String containing the username of the new entry
+ * param const char* password: String containing the password of the new entry
+ */
 void add_password(
     struct password ***arr,
     int *curr_size,
@@ -122,6 +149,15 @@ void add_password(
 }
 
 
+/*
+ * Reads all stored passwords in the given file.
+ * If the file exists, skip the first line, because this is holding the password requirements.
+ * From the second line on, read every line and initialize the password structs accordingly.
+ *
+ * param const char* file_name: Decrypted file to read passwords from
+ * param int* curr_size: Pointer to the integer where the current size of the array is stored
+ * return struct password**: Array of pointers to password structs
+ */
 struct password ** read_passwords(const char *file_name, int* curr_size) {
     struct password** p_passwords = calloc(DEFAULT_CAPACITY, sizeof(struct password*));
     *curr_size = 0;
@@ -149,10 +185,12 @@ struct password ** read_passwords(const char *file_name, int* curr_size) {
 
 
 /*
-Read the password requirement saved in the password file. If none has been defined yet, a default is returned.
-
-param const char* file_name: Decrypted file, where passwords are stored
-return struct password_requirement*: Pointer to the struct containing the defined password requirements
+ * Read the password requirement saved in the password file.
+ * If none has been defined yet, a default is returned.
+ * Default = (length: 12, uppercased letters: 1, digits: 1, special characters: 1)
+ *
+ * param const char* file_name: Decrypted file, where passwords are stored
+ * return struct password_requirement*: Pointer to the struct containing the defined password requirements
 */
 struct password_requirement* read_password_requirement(const char* file_name) {
     struct password_requirement* p_requirement = calloc(1, sizeof(struct password_requirement));
@@ -187,6 +225,12 @@ struct password_requirement* read_password_requirement(const char* file_name) {
 }
 
 
+/*
+ * Saves the given password requirement to the open file stream
+ *
+ * param struct password_requirement* requirement: Pointer to the current password requirement
+ * param FILE* file: Open file stream
+ */
 void save_password_requirement(struct password_requirement* requirement, FILE* file) {
     char buffer[50];
     const int len_length = snprintf(buffer, sizeof(buffer), "%d", requirement->length);
@@ -219,6 +263,14 @@ void save_password_requirement(struct password_requirement* requirement, FILE* f
 }
 
 
+/*
+ * Saves the passwords in the array to the open file stream
+ * After saving each password, the memory used in the password struct pointer is freed
+ *
+ * param struct passwords** passwords: Array of password struct pointers
+ * param const int* curr_size: Current size of the password array
+ * param FILE* file: Open file stream
+ */
 void save_passwords(struct password** passwords, const int* curr_size, FILE* file) {
     struct password** ptr = passwords;
     for (int i = 0; i < *curr_size; i++, ptr++) {
@@ -241,6 +293,15 @@ void save_passwords(struct password** passwords, const int* curr_size, FILE* fil
 }
 
 
+/*
+ * Saves the password requirement and the passwords to a given file.
+ * Frees all memory used in the password struct pointers
+ *
+ * param struct password_requirement* requirements: Pointer to the current password requirement struct
+ * param struct password** passwords: Array of password struct pointers
+ * param const int* curr_size: Pointer to the integer holding the current array size
+ * param const char* file_name: File in which to save the decrypted password requirements and passwords
+ */
 void save_passwords_and_requirements(
     struct password_requirement *requirements,
     struct password **passwords,

@@ -9,6 +9,9 @@
 #include <stdlib.h>
 
 
+/*
+ * Print the ASCII-art header of the application
+ */
 void print_application_header(void){
     printf("  ______        .______      ___           _______.     _______.\n");
     printf(" /      |       |   _  \\    /   \\         /       |    /       |\n");
@@ -19,11 +22,20 @@ void print_application_header(void){
     printf("==================================================================\n\n");
 }
 
+/*
+ * Print welcome message for new users
+ */
 void print_welcome_message(void){
   printf("Welcome to C-Pass, the console based password manager\n\n");
 }
 
-
+/*
+ * Display login dialog when first starting the application
+ *
+ * param char* password: Character array to save the master password in [MAX_SIZE = 50]
+ * param const int remaining_tries: Remaining tries to enter correct password until application is stopped
+ * param const bool first_time_user: Depicting whether the application has been started before
+ */
 void login_dialog(char* password, const int remaining_tries, const bool first_time_user) {
     system("cls");
     print_application_header();
@@ -35,6 +47,14 @@ void login_dialog(char* password, const int remaining_tries, const bool first_ti
     scanf("%50s", password);
 }
 
+/*
+ * The login loop when starting the application. The maximum amount of tries to enter the correct password
+ * until the application is shut down is 3.
+ *
+ * param const char* encrypted_file: The file name of the encrypted file storing the saved passwords
+ * param const char* decrypted_file: The file name where the decrypted contents should be saved
+ * param char* password: The character array in which the master password should be stored
+ */
 void login(const char* encrypted_file, const char* decrypted_file, char* password) {
     if (file_exists(encrypted_file)) {
         int i = 3;

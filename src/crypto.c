@@ -7,7 +7,13 @@
 #define AES_256_KEY_SIZE 32
 #define AES_BLOCK_SIZE 16
 
-// Derives key and IV from password
+/*
+ * Derive key and IV from password
+ *
+ * param const unsigned char* password: Master password set by user
+ * param unsigned char* key: Empty char array
+ * param unsigned char* iv: Empty char array
+ */
 bool derive_key_and_iv(const unsigned char *password, unsigned char *key, unsigned char *iv) {
     // Salt is not used for simplicity in this example, but it's recommended in production.
     const unsigned char salt[8] = {0}; // Can use a random salt for security
@@ -21,7 +27,13 @@ bool derive_key_and_iv(const unsigned char *password, unsigned char *key, unsign
     return 1;
 }
 
-// Encrypt data from input file to output file using AES-256-CBC
+/*
+ * Encrypt data from input file to output file using AES-256-CBC
+ *
+ * param const char* input_filename: Name of decrypted file
+ * param const char* output_filename: Name of encrypted file
+ * param char* password: Master password to be used for encryption
+ */
 bool encrypt_file(const char *input_filename, const char *output_filename, char *password) {
     FILE *input_file = fopen(input_filename, "r");
     FILE *output_file = fopen(output_filename, "wb");
@@ -78,7 +90,13 @@ bool encrypt_file(const char *input_filename, const char *output_filename, char 
     return true;
 }
 
-// Decrypt data from input file to output file using AES-256-CBC
+/*
+ * Decrypt data from input file to output file using AES-256-CBC
+ *
+ * param const char* input_filename: Name of encrypted file
+ * param const char* output_filename: Name of decrypted file
+ * param char* password: Master password to be used for decryption
+ */
 bool decrypt_file(const char *input_filename, const char *output_filename, char *password) {
     FILE *input_file = fopen(input_filename, "rb");
     FILE *output_file = fopen(output_filename, "w");
