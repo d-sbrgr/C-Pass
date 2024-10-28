@@ -11,9 +11,9 @@
 #include <time.h>
 #include <string.h>
 
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
     #include <conio.h>
-#elif !defined(_WIN32)
+#else
     #include <termios.h>
     #include <unistd.h>
 #endif
@@ -51,11 +51,7 @@ char* read_password() {
             free(password);
             password = temp;
         }
-#if !defined(__MINGW32__)
         ch = _getch();
-#else
-        ch = getchar();
-#endif
         if (ch == '\r' || ch == '\n')
             break;
         if (ch == '\b' && i > 0) {
@@ -64,9 +60,7 @@ char* read_password() {
             i--;
         } else {
             password[i++] = ch;
-#if !defined(__MINGW32__)
             printf("*"); // Mask character
-#endif
         }
     }
 #else
