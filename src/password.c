@@ -30,8 +30,6 @@ const char *alpha_lower = "abcdefghijklmnopqrstuvwxyz";
 /*
  * Read in a password from console without displaying the plain characters
  *
- * No display of plain characters only works in pure Windows or Unix environments
- *
  * return char*: The password entered by the user
  */
 char* read_password() {
