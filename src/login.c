@@ -3,6 +3,7 @@
 //
 
 #include "login.h"
+#include "password.h"
 #include "util.h"
 #include "crypto.h"
 #include <stdio.h>
@@ -32,19 +33,18 @@ void print_welcome_message(void){
 /*
  * Display login dialog when first starting the application
  *
- * param char* password: Character array to save the master password in [MAX_SIZE = 50]
  * param const int remaining_tries: Remaining tries to enter correct password until application is stopped
  * param const bool first_time_user: Depicting whether the application has been started before
+ * return char*: Password entered by the user
  */
-void login_dialog(char* password, const int remaining_tries, const bool first_time_user) {
+char* login_dialog(const int remaining_tries, const bool first_time_user) {
     system("cls");
     print_application_header();
     if (first_time_user)
         print_welcome_message();
     if (remaining_tries)
         printf("%i tries remaining\n", remaining_tries);
-    printf("Enter your password: (max 50 characters)\n");
-    scanf("%50s", password);
+    return read_password();
 }
 
 /*
@@ -53,19 +53,19 @@ void login_dialog(char* password, const int remaining_tries, const bool first_ti
  *
  * param const char* encrypted_file: The file name of the encrypted file storing the saved passwords
  * param const char* decrypted_file: The file name where the decrypted contents should be saved
- * param char* password: The character array in which the master password should be stored
+ * return char*: The master password as character array
  */
-void login(const char* encrypted_file, const char* decrypted_file, char* password) {
+char* login(const char* encrypted_file, const char* decrypted_file) {
     if (file_exists(encrypted_file)) {
         int i = 3;
         for (; i > 0; i--) {
-            login_dialog(password, i, false);
+            char* password = login_dialog(i, false);
             if (decrypt_file(encrypted_file, decrypted_file, password))
-                break;
+                return password;
+            free(password);
         }
         if (!i)
             exit(1);
-    } else {
-        login_dialog(password, 0, true);
     }
+    return login_dialog(0, true);
 }

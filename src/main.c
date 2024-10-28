@@ -26,13 +26,8 @@ int main() {
     const char* decrypted_file = "c_pass.txt";
     const char* encrypted_file = "c_pass.bin";
 
-    // Allocate memory for the master password
-    char* password = malloc(50 * sizeof(char));
-    if (!password)
-        exit(2);
-
     // Display login screen, get master password and decrypt the previously saved passwords
-    login(encrypted_file, decrypted_file, password);
+    char* password = login(encrypted_file, decrypted_file);
 
     // Load the previously saved requirements and passwords from decrypted file
     int num_passwords = 0;

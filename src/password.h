@@ -20,6 +20,7 @@ struct password_requirement {
     int special_characters;
 };
 
+char* read_password();
 char* generate_password(const struct password_requirement* requirement);
 void add_password(
     struct password ***arr,

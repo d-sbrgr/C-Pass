@@ -7,6 +7,6 @@
 
 #include <stdbool.h>
 
-void login(const char* encrypted_file, const char* decrypted_file, char* password);
+char* login(const char* encrypted_file, const char* decrypted_file);
 
 #endif // LOGIN_H
