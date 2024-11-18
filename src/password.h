@@ -38,4 +38,11 @@ void save_passwords_and_requirements(
     const int* curr_size,
     const char* file_name);
 
+int is_valid_password(const char *password, const struct password_requirement *requirement);
+
+extern const char *digits;
+extern const char *special_characters;
+extern const char *alpha_upper;
+extern const char *alpha_lower;
+
 #endif //PASSWORD_H

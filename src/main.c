@@ -12,6 +12,7 @@
 #include "password.h"
 #include "crypto.h"
 #include "login.h"
+#include "vault_menu.h"
 
 
 int main() {
@@ -32,17 +33,43 @@ int main() {
     // Load the previously saved requirements and passwords from decrypted file
     int num_passwords = 0;
     struct password_requirement* p_requirement = read_password_requirement(decrypted_file);
-    struct password** p_passwords = read_passwords(decrypted_file, &num_passwords);
+    struct password** passwords = read_passwords(decrypted_file, &num_passwords);
 
     // Delete decrypted file
     remove(decrypted_file);
 
-    // TODO: add loop where user can interact with passwords
+    int running = 1;
+    while (running) {
+        printf("Choose a option:\n");
+        printf("[1] Get a password:\n");
+        printf("[2] Generate new password\n");
+        printf("[3] Add existing password\n");
+        printf("[0] Close C-Pass\n");
 
-    // Save the password requirements and passwords to the decrytpted file
-    save_passwords_and_requirements(p_requirement, p_passwords, &num_passwords, decrypted_file);
+        int choice;
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                get_password(passwords, num_passwords);
+            break;
+            case 2:
+                generate_and_save_password(passwords, &num_passwords, p_requirement);
+            break;
+            case 3:
+                add_existing_password(passwords, &num_passwords, p_requirement);
+            break;
+            case 0:
+                running = 0;
+            break;
+            default:
+                printf("Invalid choice\n");
+        }
+    }
+
+    // Save the password requirements and passwords to the decrypted file
+    save_passwords_and_requirements(p_requirement, passwords, &num_passwords, decrypted_file);
     free(p_requirement);
-    free(p_passwords);
+    free(passwords);
 
     // Encrypt the saved data using the master password
     encrypt_file(decrypted_file, encrypted_file, password);

@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <ctype.h>
 
 #if defined(_WIN32)
     #include <conio.h>
@@ -396,4 +397,31 @@ void save_passwords_and_requirements(
     save_password_requirement(requirements, file);
     save_passwords(passwords, curr_size, file);
     fclose(file);
+}
+
+int is_valid_password(const char *password, const struct password_requirement *requirement) {
+    const int length = strlen(password);
+    int num_uppercased = 0, num_digits = 0, num_special_characters = 0;
+
+    if (length < requirement->length) {
+        return 0;  // Password is too short
+    }
+
+    // Count the required character types in the password
+    for (int i = 0; i < length; i++) {
+        if (isupper(password[i])) {
+            num_uppercased++;
+        } else if (isdigit(password[i])) {
+            num_digits++;
+        } else if (strchr(special_characters, password[i]) != NULL) {
+            num_special_characters++;
+        }
+    }
+
+    // Check if the password meets the requirements
+    if (num_uppercased >= requirement->uppercased && num_digits >= requirement->digits && num_special_characters >= requirement->special_characters) {
+        return 1;  // Password is valid
+    }
+
+    return 0;  // Password is invalid
 }

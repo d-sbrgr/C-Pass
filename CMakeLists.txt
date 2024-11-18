@@ -30,6 +30,8 @@ add_executable(C_Pass
     src/login.c
     src/util.c
     src/password.c
+        src/vault_menu.c
+        src/vault_menu.h
 )
 
 target_link_libraries(C_Pass ${OPENSSL_LIBS})
