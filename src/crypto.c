@@ -1,4 +1,6 @@
+#ifdef _WIN32
 #include <openssl/applink.c>
+#endif
 #include <openssl/evp.h>
 #include <stdio.h>
 #include <string.h>
