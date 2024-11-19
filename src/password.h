@@ -28,7 +28,7 @@ void add_password(
     const char *name,
     const char* username,
     const char *password);
-void delete_password(struct password*** arr, const int* index);
+void delete_password(struct password*** arr, int index);
 void change_password(struct password*** arr, const int* index, const char* password);
 struct password** read_passwords(const char* file_name, int* curr_size);
 struct password_requirement* read_password_requirement(const char* file_name);

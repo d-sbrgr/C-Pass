@@ -155,15 +155,15 @@ char *generate_password(const struct password_requirement *requirement) {
  * param struct password*** arr: Pointer to the array containing the password struct pointers
  * param const int* index: Pointer to the integer depicting the given index
  */
-void delete_password(struct password ***arr, const int *index) {
+void delete_password(struct password ***arr, const int index) {
     if (*arr == NULL)
         return;
-    struct password *temp = (*arr)[*index];
+    struct password *temp = (*arr)[index];
     free(temp->name);
     free(temp->username);
     free(temp->password);
     free(temp);
-    (*arr)[*index] = NULL;
+    (*arr)[index] = NULL;
 }
 
 

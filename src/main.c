@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "password.h"
+#include "util.h"
 #include "crypto.h"
 #include "login.h"
 #include "vault_menu.h"
@@ -42,15 +43,25 @@ int main() {
     free(*decrypted_char);
 
     int running = 1;
+    clear_console();
     while (running) {
         printf("Choose a option:\n");
         printf("[1] Get a password:\n");
         printf("[2] Generate new password\n");
         printf("[3] Add existing password\n");
+        printf("[4] Edit an existing password\n");
+        printf("[5] Delete existing password\n");
+        printf("[6] Edit password requirements\n");
         printf("[0] Close C-Pass\n");
 
         int choice;
-        scanf("%d", &choice);
+        int result = scanf("%d", &choice);
+        if (result != 1) {
+            printf("Invalid input! Please enter an integer.\n");
+            while(getchar() != '\n'){}// Clear the buffer
+            clear_console();
+            continue;
+        }
         switch (choice) {
             case 1:
                 get_password(passwords, num_passwords);
@@ -60,6 +71,15 @@ int main() {
             break;
             case 3:
                 add_existing_password(passwords, &num_passwords, p_requirement);
+            break;
+            case 4:
+                edit_password(passwords, num_passwords, p_requirement);
+            break;
+            case 5:
+                loop_delete_password(&passwords, &num_passwords);
+            break;
+            case 6:
+                update_password_requirements(p_requirement);
             break;
             case 0:
                 running = 0;

@@ -4,6 +4,7 @@
 
 #include "util.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 
 /*
@@ -18,4 +19,12 @@ bool file_exists(const char *path){
     return false;
   fclose(file);
   return true;
+}
+
+void clear_console() {
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
 }
