@@ -36,7 +36,7 @@ void save_passwords_and_requirements(
     struct password_requirement* requirements,
     struct password** passwords,
     const int* curr_size,
-    const char* file_name);
+    char** output);
 
 int is_valid_password(const char *password, const struct password_requirement *requirement);
 

@@ -236,32 +236,37 @@ void add_password(
  * param int* curr_size: Pointer to the integer where the current size of the array is stored
  * return struct password**: Array of pointers to password structs
  */
-struct password **read_passwords(const char *file_name, int *curr_size) {
+struct password **read_passwords(const char *input, int *curr_size) {
     struct password **p_passwords = calloc(DEFAULT_CAPACITY, sizeof(struct password *));
     *curr_size = 0;
     // If there are no passwords yet, return empty array
-    if (!file_exists(file_name)) {
+    if (!input) {
         return p_passwords;
     }
-    FILE *file = fopen(file_name, "r");
-    char buffer[1024];
+    char *temp = strdup(input);
 
-    // Skip the first line, because this is the password requirement
-    fgets(buffer, sizeof(buffer), file);
+    char *line = temp;
+    char *next_line;
+    next_line = strchr(line, '\n');
+    line = next_line + 1;
 
-    // Read and process remaining lines and store the passwords.
-    while (fgets(buffer, sizeof(buffer), file) != NULL) {
-        const size_t len = strlen(buffer);
-        if (len > 0 && buffer[len - 1] == '\n') {
-            buffer[len - 1] = '\0';
+    // Loop through each line
+    while ((next_line = strchr(line, '\n')) != NULL) {
+        *next_line = '\0';
+        char *words = strdup(line);
+        const size_t len = strlen(words);
+        if (len > 0 && line[len - 1] == '\n') {
+            line[len - 1] = '\0';
         }
-        const char *name = strtok(buffer, " ");
+        const char *name = strtok(words, " ");
         const char *username = strtok(NULL, " ");
         const char *password = strtok(NULL, " ");
         add_password(&p_passwords, curr_size, name, username, password);
+        line = next_line + 1; // Move to the next line
+        free(words);
     }
 
-    fclose(file);
+    free(temp);
     return p_passwords;
 }
 
@@ -274,7 +279,7 @@ struct password **read_passwords(const char *file_name, int *curr_size) {
  * param const char* file_name: Decrypted file, where passwords are stored
  * return struct password_requirement*: Pointer to the struct containing the defined password requirements
 */
-struct password_requirement *read_password_requirement(const char *file_name) {
+struct password_requirement *read_password_requirement(const char *input) {
     struct password_requirement *p_requirement = calloc(1, sizeof(struct password_requirement));
     p_requirement->length = 12;
     p_requirement->uppercased = 1;
@@ -282,19 +287,13 @@ struct password_requirement *read_password_requirement(const char *file_name) {
     p_requirement->special_characters = 1;
 
     // If there is no requirement set, return default requirement
-    if (!file_exists(file_name)) {
+    if (!input) {
         return p_requirement;
     }
-
-    FILE *file = fopen(file_name, "r");
-    char line[256];
-    if (!fgets(line, sizeof(line), file)) {
-        fclose(file);
-        return p_requirement;
-    }
-    fclose(file);
+    char *temp = strdup(input);
 
     // Parse the line for integers separated by spaces
+    char *line = strtok(temp, "\n");
     const char *token = strtok(line, " ");
     if (token) p_requirement->length = atoi(token);
     token = strtok(NULL, " ");
@@ -303,6 +302,7 @@ struct password_requirement *read_password_requirement(const char *file_name) {
     if (token) p_requirement->digits = atoi(token);
     token = strtok(NULL, " ");
     if (token) p_requirement->special_characters = atoi(token);
+    free(temp);
     return p_requirement;
 }
 
@@ -313,7 +313,7 @@ struct password_requirement *read_password_requirement(const char *file_name) {
  * param struct password_requirement* requirement: Pointer to the current password requirement
  * param FILE* file: Open file stream
  */
-void save_password_requirement(struct password_requirement *requirement, FILE *file) {
+char * get_password_requirement(struct password_requirement *requirement) {
     char buffer[50];
     const int len_length = snprintf(buffer, sizeof(buffer), "%d", requirement->length);
     const int len_digits = snprintf(buffer, sizeof(buffer), "%d", requirement->digits);
@@ -321,27 +321,24 @@ void save_password_requirement(struct password_requirement *requirement, FILE *f
     const int len_special = snprintf(buffer, sizeof(buffer), "%d", requirement->special_characters);
 
     // Total length: sum of lengths + 3 spaces + 1 for '\0'
-    const size_t total_length = len_length + len_digits + len_uppercased + len_special + 4;
+    const size_t size = len_length + len_digits + len_uppercased + len_special + 5;
 
-    char *result = malloc(total_length);
-    if (!result) {
+    char * output = calloc(size, sizeof(char));
+    if (!output) {
         perror("Failed to allocate memory for password_requirement");
-        return;
+        return NULL;
     }
 
     // Format the string as space-separated integers
     snprintf(
-        result,
-        total_length,
-        "%d %d %d %d",
+        output,
+        size,
+        "%d %d %d %d\n",
         requirement->length,
         requirement->uppercased,
         requirement->digits,
         requirement->special_characters);
-
-    fputs(result, file);
-    fputc('\n', file);
-    free(result);
+    return output;
 }
 
 
@@ -353,25 +350,50 @@ void save_password_requirement(struct password_requirement *requirement, FILE *f
  * param const int* curr_size: Current size of the password array
  * param FILE* file: Open file stream
  */
-void save_passwords(struct password **passwords, const int *curr_size, FILE *file) {
+char * get_passwords(struct password **passwords, const int *curr_size) {
+    size_t size = 1024;
+    char *output= calloc(size, sizeof(char));
+    if (!output) {
+        perror("Failed to allocate memory for password_requirement");
+        return NULL;
+    }
+    output[0] = '\0';
     struct password **ptr = passwords;
     for (int i = 0; i < *curr_size; i++, ptr++) {
-        if ((*ptr) != NULL) {
+        if (*ptr != NULL) {
             // Calculate the required buffer size (2 for space, 1 for '\0')
-            const size_t length = strlen((*ptr)->name) + strlen((*ptr)->username) + strlen((*ptr)->password) + 3;
-            char *result = malloc(length);
-            if (!result)
+            const size_t length = strlen((*ptr)->name) + strlen((*ptr)->username) + strlen((*ptr)->password) + 4;
+            char *pw = malloc(length);
+            if (!pw) {
+                free((*ptr)->name);
+                free((*ptr)->username);
+                free((*ptr)->password);
+                free(*ptr);
                 continue;
-            snprintf(result, length, "%s %s %s", (*ptr)->name, (*ptr)->username, (*ptr)->password);
-            fputs(result, file);
-            fputc('\n', file);
-            free(result);
+            }
+            snprintf(pw, length, "%s %s %s\n", (*ptr)->name, (*ptr)->username, (*ptr)->password);
+
             free((*ptr)->name);
             free((*ptr)->username);
             free((*ptr)->password);
-            free((*ptr));
+            free(*ptr);
+            if (strlen(pw) + strlen(output) + 1 > size) {
+                size *= 2;
+                char * temp = realloc(output, size);
+                if (!temp) {
+                    perror("Failed to resize array");
+                    free(pw);
+                    free(output);
+                    return NULL;
+                }
+                output = temp;
+                free(temp);
+            }
+            strcat(output, pw);
+            free(pw);
         }
     }
+    return output;
 }
 
 
@@ -388,15 +410,20 @@ void save_passwords_and_requirements(
     struct password_requirement *requirements,
     struct password **passwords,
     const int *curr_size,
-    const char *file_name) {
-    FILE *file = fopen(file_name, "w");
-    if (!file) {
-        perror("Failed to open file for writing");
+    char **output) {
+    char *req = get_password_requirement(requirements);
+    char *pwd = get_passwords(passwords, curr_size);
+    if (!req || !pwd) {
+        perror("Failed to allocate memory for password_requirement");
+        free(req);
+        free(pwd);
         return;
     }
-    save_password_requirement(requirements, file);
-    save_passwords(passwords, curr_size, file);
-    fclose(file);
+    *output = calloc(strlen(req) + strlen(pwd) + 1, sizeof(char));
+    strcat(*output, req);
+    strcat(*output, pwd);
+    free(req);
+    free(pwd);
 }
 
 int is_valid_password(const char *password, const struct password_requirement *requirement) {

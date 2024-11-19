@@ -24,19 +24,22 @@ int main() {
     OpenSSL_add_all_algorithms();
 
     // Define file names
-    const char* decrypted_file = "c_pass.txt";
+    char** decrypted_char = malloc(sizeof(char *));
+    if (!decrypted_char) {
+        exit(-99);
+    }
     const char* encrypted_file = "c_pass.bin";
 
     // Display login screen, get master password and decrypt the previously saved passwords
-    char* password = login(encrypted_file, decrypted_file);
+    char* password = login(encrypted_file, decrypted_char);
 
     // Load the previously saved requirements and passwords from decrypted file
     int num_passwords = 0;
-    struct password_requirement* p_requirement = read_password_requirement(decrypted_file);
-    struct password** passwords = read_passwords(decrypted_file, &num_passwords);
+    struct password_requirement* p_requirement = read_password_requirement(*decrypted_char);
+    struct password** passwords = read_passwords(*decrypted_char, &num_passwords);
 
-    // Delete decrypted file
-    remove(decrypted_file);
+    // Free decrypted characters
+    free(*decrypted_char);
 
     int running = 1;
     while (running) {
@@ -67,14 +70,15 @@ int main() {
     }
 
     // Save the password requirements and passwords to the decrypted file
-    save_passwords_and_requirements(p_requirement, passwords, &num_passwords, decrypted_file);
+    save_passwords_and_requirements(p_requirement, passwords, &num_passwords, decrypted_char);
     free(p_requirement);
     free(passwords);
 
     // Encrypt the saved data using the master password
-    encrypt_file(decrypted_file, encrypted_file, password);
-    remove(decrypted_file);
+    encrypt_file(encrypted_file, decrypted_char, password);
     free(password);
+    free(*decrypted_char);
+    free(decrypted_char);
 
     // Cleanup openssl library
     EVP_cleanup();

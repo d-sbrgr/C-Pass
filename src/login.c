@@ -55,17 +55,18 @@ char* login_dialog(const int remaining_tries, const bool first_time_user) {
  * param const char* decrypted_file: The file name where the decrypted contents should be saved
  * return char*: The master password as character array
  */
-char* login(const char* encrypted_file, const char* decrypted_file) {
+char* login(const char* encrypted_file, char** decrypted_char) {
     if (file_exists(encrypted_file)) {
         int i = 3;
         for (; i > 0; i--) {
             char* password = login_dialog(i, false);
-            if (decrypt_file(encrypted_file, decrypted_file, password))
+            if (decrypt_file(encrypted_file, decrypted_char, password))
                 return password;
             free(password);
         }
         if (!i)
             exit(1);
     }
+    *decrypted_char = calloc(1, sizeof(char));
     return login_dialog(0, true);
 }

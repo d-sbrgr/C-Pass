@@ -7,8 +7,8 @@
 
 #include <stdbool.h>
 
-bool encrypt_file(const char *input_filename, const char *output_filename, char *password);
-bool decrypt_file(const char *input_filename, const char *output_filename, char *password);
+bool encrypt_file(const char *encrypted_filename, char **input, char *password);
+bool decrypt_file(const char *encrypted_filename, char **output, char *password);
 
 
 #endif //CRYPTO_H
