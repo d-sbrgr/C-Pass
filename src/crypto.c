@@ -32,9 +32,10 @@ bool derive_key_and_iv(const unsigned char *password, unsigned char *key, unsign
 /*
  * Encrypt data from input file to output file using AES-256-CBC
  *
- * param const char* input_filename: Name of decrypted file
- * param const char* output_filename: Name of encrypted file
+ * param const char* encrypted_filename: Name of encrypted file
+ * param const char** input: Pointer to the char array in which the cleartext contents are stored
  * param char* password: Master password to be used for encryption
+ * return bool: Indication whether operation was successful
  */
 bool encrypt_file(const char *encrypted_filename, char **input, char *password) {
     FILE *output_file = fopen(encrypted_filename, "wb");
@@ -113,9 +114,10 @@ bool encrypt_file(const char *encrypted_filename, char **input, char *password) 
 /*
  * Decrypt data from input file to output file using AES-256-CBC
  *
- * param const char* input_filename: Name of encrypted file
- * param const char* output_filename: Name of decrypted file
+ * param const char* encrypted_filename: Name of encrypted file
+ * param const char** output: Pointer to char array in which cleartext file contents will be saved
  * param char* password: Master password to be used for decryption
+ * return bool: Indication whether decryption was successful or not
  */
 bool decrypt_file(const char *encrypted_filename, char **output, char *password) {
     FILE *input_file = fopen(encrypted_filename, "rb");

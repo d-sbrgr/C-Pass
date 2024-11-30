@@ -52,7 +52,7 @@ char* login_dialog(const int remaining_tries, const bool first_time_user) {
  * until the application is shut down is 3.
  *
  * param const char* encrypted_file: The file name of the encrypted file storing the saved passwords
- * param const char* decrypted_file: The file name where the decrypted contents should be saved
+ * param char** decrypted_char: A pointer to a char array in which the cleartext passwords will be stored
  * return char*: The master password as character array
  */
 char* login(const char* encrypted_file, char** decrypted_char) {

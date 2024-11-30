@@ -232,7 +232,7 @@ void add_password(
  * If the file exists, skip the first line, because this is holding the password requirements.
  * From the second line on, read every line and initialize the password structs accordingly.
  *
- * param const char* file_name: Decrypted file to read passwords from
+ * param const char* input: Character array containing the cleartext file contents
  * param int* curr_size: Pointer to the integer where the current size of the array is stored
  * return struct password**: Array of pointers to password structs
  */
@@ -276,7 +276,7 @@ struct password **read_passwords(const char *input, int *curr_size) {
  * If none has been defined yet, a default is returned.
  * Default = (length: 12, uppercased letters: 1, digits: 1, special characters: 1)
  *
- * param const char* file_name: Decrypted file, where passwords are stored
+ * param const char* input: Character array containing the cleartext file contents
  * return struct password_requirement*: Pointer to the struct containing the defined password requirements
 */
 struct password_requirement *read_password_requirement(const char *input) {
@@ -311,7 +311,7 @@ struct password_requirement *read_password_requirement(const char *input) {
  * Saves the given password requirement to the open file stream
  *
  * param struct password_requirement* requirement: Pointer to the current password requirement
- * param FILE* file: Open file stream
+ * return char*: Character array displaying the password requirement as string
  */
 char * get_password_requirement(struct password_requirement *requirement) {
     char buffer[50];
@@ -348,7 +348,7 @@ char * get_password_requirement(struct password_requirement *requirement) {
  *
  * param struct passwords** passwords: Array of password struct pointers
  * param const int* curr_size: Current size of the password array
- * param FILE* file: Open file stream
+ * return char*: Character array displaying the passwords as string seperated by newline
  */
 char * get_passwords(struct password **passwords, const int *curr_size) {
     size_t size = 1024;
@@ -404,7 +404,6 @@ char * get_passwords(struct password **passwords, const int *curr_size) {
  * param struct password_requirement* requirements: Pointer to the current password requirement struct
  * param struct password** passwords: Array of password struct pointers
  * param const int* curr_size: Pointer to the integer holding the current array size
- * param const char* file_name: File in which to save the decrypted password requirements and passwords
  */
 void save_passwords_and_requirements(
     struct password_requirement *requirements,
@@ -426,6 +425,13 @@ void save_passwords_and_requirements(
     free(pwd);
 }
 
+/*
+ * Check whether a given password meets the requirements
+ *
+ * param const char* password: Character array containing the password in question
+ * param const struct* password_requirement: Point to given password_requirement struct
+ * return int: 1 if password is valid, else 0
+ */
 int is_valid_password(const char *password, const struct password_requirement *requirement) {
     const int length = strlen(password);
     int num_uppercased = 0, num_digits = 0, num_special_characters = 0;
