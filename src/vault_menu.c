@@ -12,30 +12,33 @@
 
 void get_password(struct password **p_passwords, const int num_passwords) {
 
-    char name[256];
     clear_console();
-    printf("---Get a password---\n");
+    printf("---Get a password ---\n");
     list_password_names(p_passwords, &num_passwords);
-    printf("Enter website / application name\n");
-    scanf("%255s", name);  // Use %255s to prevent buffer overflow
 
-    // Consume any leftover newline from previous input
-    while(getchar() != '\n');
-
-    for (int i = 0; i < num_passwords; i++) {
-        if (p_passwords[i] != NULL && strcmp(p_passwords[i]->name, name) == 0) {
-            // If the name matches, display the stored username and password
-            clear_console();
-            printf("Username for %s: %s\n", p_passwords[i]->name, p_passwords[i]->username);
-            printf("Password: %s\n", p_passwords[i]->password);
-            printf("--------------\n");
-            return;  // Exit the function once the password is found
-        }
+    int choice;
+    printf("Enter your choice (1-%d): ", num_passwords);
+    int result = scanf("%d", &choice);
+    if (result != 1) {
+        while(getchar() != '\n'){}
+        clear_console();
+        printf("Invalid choice.\n");
+        printf("--------------\n");
+        return;
     }
-    // If no match is found
-    clear_console();
-    printf("No password found for %s.\n", name);
-    printf("--------------\n");
+
+    if (choice < 1 || choice > num_passwords) {
+        clear_console();
+        printf("Invalid choice.\n");
+        printf("--------------\n");
+        return;
+    }
+
+    struct password* selected_password = p_passwords[choice - 1];
+
+    printf("Username for %s: %s \n",selected_password->name, selected_password->username);
+    printf("Password: %s: \n", selected_password->password);
+
 }
 
 void generate_and_save_password(
