@@ -240,7 +240,7 @@ struct password **read_passwords(const char *input, int *curr_size) {
     struct password **p_passwords = calloc(DEFAULT_CAPACITY, sizeof(struct password *));
     *curr_size = 0;
     // If there are no passwords yet, return empty array
-    if (!input) {
+    if (!input || *input == '\0') {
         return p_passwords;
     }
     char *temp = strdup(input);
