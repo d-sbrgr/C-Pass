@@ -15,6 +15,9 @@ void get_password(struct password **p_passwords, const int num_passwords) {
     clear_console();
     printf("---Get a password ---\n");
     list_password_names(p_passwords, &num_passwords);
+    if (num_passwords == 0) {
+        return;
+    }
 
     int choice;
     printf("Enter your choice (1-%d): ", num_passwords);
@@ -121,6 +124,9 @@ void edit_password(struct password** passwords, int num_passwords, const struct 
     clear_console();
     printf("---Edit password ---\n");
     list_password_names(passwords, &num_passwords);
+    if (num_passwords == 0) {
+        return;
+    }
 
     int choice;
     printf("Enter your choice (1-%d): ", num_passwords);
@@ -192,6 +198,9 @@ void loop_delete_password(struct password*** passwords, int* num_passwords) {
     clear_console();
     printf("---Delete password ---\n");
     list_password_names(*passwords, num_passwords);
+    if (num_passwords == 0) {
+        return;
+    }
 
     int choice;
     printf("Enter your choice (1-%d): ", *num_passwords);
